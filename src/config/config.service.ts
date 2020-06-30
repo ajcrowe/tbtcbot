@@ -1,23 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EthereumConfig, TwitterConfig, TBtcConfig, InfluxDbConfig } from '../types'
-import { TwitterOptions } from 'twitter-lite'
+import {
+  EthereumConfig,
+  TwitterConfig,
+  TBtcConfig,
+  InfluxDbConfig,
+} from '../types';
+import { TwitterOptions } from 'twitter-lite';
 
 @Injectable()
 export class AppConfigService {
-  constructor(
-    protected readonly configService: ConfigService
-  ) {}
+  constructor(protected readonly configService: ConfigService) {}
 
   /**
-   * Ethereum client
+   * Ethereum client config
    */
   public get ethereum(): EthereumConfig {
     return this.configService.get<EthereumConfig>('ethereum');
   }
 
   /**
-   * TBtc config
+   * tBTC config
    */
   public get twitter(): TwitterOptions {
     const config = this.configService.get<TwitterConfig>('twitter');
@@ -25,7 +28,7 @@ export class AppConfigService {
       consumer_key: config.consumerKey,
       consumer_secret: config.consumerSecret,
       access_token_key: config.accessTokenKey,
-      access_token_secret: config.accessTokenSecret
+      access_token_secret: config.accessTokenSecret,
     };
   }
 

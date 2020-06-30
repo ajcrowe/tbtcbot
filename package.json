@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.4.0",
-    "@keep-network/tbtc": "^1.0.1-rc.1",
     "@nestjs/common": "^7.0.0",
     "@nestjs/config": "^0.5.0",
     "@nestjs/core": "^7.0.0",
@@ -39,6 +38,7 @@
     "twitter-lite": "^0.14.0"
   },
   "devDependencies": {
+    "@keep-network/tbtc": "^1.0.1-rc.1",
     "@nestjs/cli": "^7.0.0",
     "@nestjs/schematics": "^7.0.0",
     "@nestjs/testing": "^7.0.0",

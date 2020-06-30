@@ -12,7 +12,7 @@ import { DatastoreModule } from './datastore';
     TwitterModule,
     ChainWatcherModule,
     ScheduleModule.forRoot(),
-    DatastoreModule
+    DatastoreModule,
   ],
   providers: [AppService],
 })

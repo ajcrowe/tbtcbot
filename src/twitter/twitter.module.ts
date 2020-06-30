@@ -6,6 +6,6 @@ import { DatastoreModule } from '../datastore';
 @Module({
   imports: [AppConfigModule, DatastoreModule],
   providers: [TwitterService],
-  exports: [TwitterService]
+  exports: [TwitterService],
 })
 export class TwitterModule {}

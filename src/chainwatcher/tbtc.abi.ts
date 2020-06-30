@@ -1,4 +1,4 @@
-export const TBtcContractAbi = `[
+export const TBtcTokenContractAbi = `[
   {
     "inputs": [
       {
@@ -395,4 +395,4 @@ export const TBtcContractAbi = `[
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]`
+]`;

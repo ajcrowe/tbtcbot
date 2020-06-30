@@ -1,4 +1,4 @@
-import { AppConfig } from '../types'
+import { AppConfig } from '../types';
 
 export default (): AppConfig => ({
   tbtc: {
@@ -19,5 +19,5 @@ export default (): AppConfig => ({
     token: process.env.INFLUXDB_TOKEN,
     org: process.env.INFLUXDB_ORG,
     bucket: process.env.INFLUXDB_BUCKET,
-  }
+  },
 });
