@@ -27,11 +27,15 @@ export class TwitterService {
    */
   public async tweetSupply(data: SupplyData): Promise<any> {
     const status = this.formatSupply(data);
-    try {
-      await this.twitter.post('statuses/update', { status });
-      this._logger.log(`Tweeted:\n ${status}`);
-    } catch (err) {
-      this._logger.error(err);
+    if (!this.configService.isDevelopment) {
+      try {
+        await this.twitter.post('statuses/update', { status });
+        this._logger.log(`Tweeted:\n ${status}`);
+      } catch (err) {
+        this._logger.error(err);
+      }
+    } else {
+      console.log(status);
     }
   }
 

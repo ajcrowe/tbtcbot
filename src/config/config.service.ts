@@ -45,4 +45,11 @@ export class AppConfigService {
   public get influxdb(): InfluxDbConfig {
     return this.configService.get<InfluxDbConfig>('influxdb');
   }
+
+  /**
+   * Is development
+   */
+  public get isDevelopment(): boolean {
+    return process.env.APP_ENVIRONMENT == 'development' ? true : false
+  }
 }

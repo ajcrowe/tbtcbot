@@ -10,6 +10,14 @@ export interface SupplyData {
   mcap?: string;
 }
 
+export interface MintingData {
+  burnCount: number;
+  mintCount: number;
+  burned: number;
+  minted: number;
+}
+
+
 /**
  * Cronjob names
  */
