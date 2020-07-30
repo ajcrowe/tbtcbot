@@ -6,7 +6,7 @@ import {
   WriteApi,
 } from '@influxdata/influxdb-client';
 import { AppConfigService } from '../config';
-import { SupplyData, SupplyQuery } from '../types';
+import { SupplyData, SupplyQuery, TokenFlowData, SupplyInfluxData } from '../types';
 import CoinGecko from 'coingecko-api';
 
 @Injectable()
@@ -35,24 +35,53 @@ export class DatastoreService {
   /**
    * Store a new supply value within Influx
    *
-   * @param supply The supply value to store
+   * @param data The SupplyData to store
    */
-  public async storeSupply(supply: number): Promise<any> {
-    const point = new Point('supply').floatField('value', supply);
+  public storeSupply(data: SupplyData): void {
+    const point = [
+      new Point('supply')
+        .floatField('value', data.supply)
+        .intField('blockheight', data.blockHeight)
+    ]
+    this.write(point)
+  }
+
+  /**
+   * Write poiint to influx
+   * 
+   * @param point The point to write
+   */
+  async write(points: Point[]): Promise<void> {
     try {
-      this.writer.writePoint(point);
-      await this.writer.close();
-      this._logger.log(`Updated supply with new value ${supply}`);
+      points.forEach(point => {
+        this.writer.writePoint(point);
+        this.writer.close();
+      })
     } catch (err) {
-      this._logger.error(`Failed to update supply ${err}`);
+      this._logger.error(`Failed write points: ${err}`);
+    }
+  }
+
+  async getLastBlockHeight(): Promise<number> {
+    const query = `from(bucket: "${this.bucket}")
+    |> range(start: -1d)
+    |> filter(fn: (r) => r["_field"] == "blockheight")
+    |> first()`;
+    try {
+      return Number(
+        (await this.querier.collectRows<Record<string, unknown>>(query))[0]
+          ._value,
+      );
+    } catch (err) {
+      this._logger.error(`Error querying API with ${query}: ${err}`);
     }
   }
 
   /**
    * Get the current supply data from Influx
    */
-  public async getSupplyData(): Promise<SupplyData> {
-    const data: SupplyData = {};
+  public async getSupplyData(): Promise<SupplyInfluxData> {
+    const data: SupplyInfluxData = {};
     data.last = await this.query(SupplyQuery.LAST);
     data.previous = await this.query(SupplyQuery.FIRST);
     data.min = await this.query(SupplyQuery.MIN);

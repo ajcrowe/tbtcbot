@@ -4,7 +4,7 @@ import { CronJob } from 'cron';
 import { ChainWatcherService } from './chainwatcher';
 import { TwitterService } from './twitter';
 import { DatastoreService } from './datastore';
-import { CronJobs } from './types';
+import { CronJobs, DailyTweet } from './types';
 
 @Injectable()
 export class AppService {
@@ -20,16 +20,17 @@ export class AppService {
     private readonly _twitter: TwitterService,
     private readonly _datastore: DatastoreService,
   ) {
-    const supplyJob = new CronJob(CronExpression.EVERY_10_MINUTES, async () => {
+    const supplyJob = new CronJob(CronExpression.EVERY_30_SECONDS, async () => {
       this._logger.log(`Running Job (Update Supply) `);
-      const supply = (await this._chainWatcher.getSupply()).slice(0, -15);
-      this._datastore.storeSupply(Number(supply));
+      this._datastore.storeSupply(await this._chainWatcher.getSupply());
     });
 
     const supplyTweet = new CronJob(
-      CronExpression.EVERY_DAY_AT_NOON,
+      CronExpression.EVERY_MINUTE,
       async () => {
-        const data = await this._datastore.getSupplyData();
+        const data: DailyTweet = {}
+        data.supply = await this._datastore.getSupplyData();
+        data.flow = await this._chainWatcher.getMinted(await this._datastore.getLastBlockHeight());
         this._twitter.tweetSupply(data);
         this._logger.log(`Running Job (Daily Tweet) `);
       },
@@ -39,11 +40,11 @@ export class AppService {
     this._schedulerRegistry.addCronJob(CronJobs.SUPPLY_TWEET, supplyTweet);
     supplyJob.start();
     this._logger.log(
-      `Supply monitoring cron job started. Cron pattern: ${CronExpression.EVERY_10_MINUTES}`,
+      `Supply monitoring cron job started. Cron pattern: ${CronExpression.EVERY_30_SECONDS}`,
     );
     supplyTweet.start();
     this._logger.log(
-      `Supply tweeting cron job started. Cron pattern: ${CronExpression.EVERY_DAY_AT_NOON}`,
+      `Supply tweeting cron job started. Cron pattern: ${CronExpression.EVERY_MINUTE}`, //EVERY_DAY_AT_NOON
     );
   }
 }
