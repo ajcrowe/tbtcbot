@@ -6,16 +6,16 @@ import { TokenFlowData, Issuance, SupplyData } from '../types';
 import * as TBTCContractJson from '../contracts/TBTCToken.json';
 
 @Injectable()
-export class ChainWatcherService {
-  private readonly _logger = new Logger(ChainWatcherService.name);
+export class EthereumService {
+  private readonly _logger = new Logger(EthereumService.name);
   private readonly provider: WebSocketProvider;
   private readonly contract: Contract;
 
   get name(): string {
-    return 'ChainWatcherService';
+    return 'EthereumService';
   }
 
-  constructor(private configService: AppConfigService) {
+  constructor(protected readonly configService: AppConfigService) {
     const { url, network } = this.configService.ethereum;
     this.provider = new WebSocketProvider(url, network);
     this.contract = new ethers.Contract(
@@ -44,32 +44,39 @@ export class ChainWatcherService {
   }
 
   async getMinted(block: number): Promise<TokenFlowData> {
-    const burnFilter = this.contract.filters.Transfer(null, '0x0000000000000000000000000000000000000000');
-    const mintFilter = this.contract.filters.Transfer('0x0000000000000000000000000000000000000000', null);
-    try {
-      let data: TokenFlowData
-      data.burned = await this.getTransferred(burnFilter, block);
-      data.minted = await this.getTransferred(mintFilter, block);
-      console.log(data);
-      return data;
-    } catch (err) {
-      this._logger.error(err);
+    return {
+      burned: (
+        await this.getTransferred(
+          this.contract.filters.Transfer(null, '0x0000000000000000000000000000000000000000'),
+          block
+          )
+        ),
+      minted: (
+        await this.getTransferred(
+          this.contract.filters.Transfer('0x0000000000000000000000000000000000000000', null),
+          block
+          )
+        )
     }
   }
 
   async getTransferred(filter: ethers.EventFilter, block: number): Promise<Issuance> {
-    let value: number, count: number;
+    let value = 0
     try {
       const txns = await this.contract.queryFilter(filter, block);
-      count = txns.length
+      const decimals = await this.contract.decimals()
       txns.forEach(txn => {
-        console.log(txn.args.value.toNumber());
-        //console.log('total: ' + value);
-        //value =+ ethers.utils.formatUnits(txn.args.value, this.contract.decimals()))
+        value = value + Number(ethers.utils.formatUnits(
+          txn.args.value,
+          decimals)
+        )        
       });
+      return {
+        count: txns.length,
+        value: Number(value.toFixed(2))
+      };
     } catch (err) {
       this._logger.error(err)
     }
-    return {count, value};
   }
 }

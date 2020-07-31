@@ -3,14 +3,14 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AppService } from './app.service';
 import { HealthModule } from './health';
 import { TwitterModule } from './twitter';
-import { ChainWatcherModule } from './chainwatcher';
+import { EthereumModule } from './ethereum';
 import { DatastoreModule } from './datastore';
 
 @Module({
   imports: [
     HealthModule,
     TwitterModule,
-    ChainWatcherModule,
+    EthereumModule,
     ScheduleModule.forRoot(),
     DatastoreModule,
   ],

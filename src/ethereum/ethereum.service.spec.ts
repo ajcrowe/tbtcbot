@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ChainWatcherService } from './chainwatcher.service';
+import { EthereumService } from './ethereum.service';
 import { AppConfigModule } from '../config';
 
-describe('ChainWatcherService', () => {
-  let service: ChainWatcherService;
+describe('EthereumService', () => {
+  let service: EthereumService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [AppConfigModule],
-      providers: [ChainWatcherService],
+      providers: [EthereumService],
     }).compile();
 
-    service = module.get<ChainWatcherService>(ChainWatcherService);
+    service = module.get<EthereumService>(EthereumService);
   });
 
   it('should be defined', () => {

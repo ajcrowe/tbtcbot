@@ -1,8 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import Twitter from 'twitter-lite';
 import { AppConfigService } from '../config';
-import { DatastoreService } from '../datastore';
-import { SupplyData, SupplyInfluxData, DailyTweet } from '../types';
+import { DailyTweet } from '../types';
 import moment from 'moment';
 
 @Injectable()
@@ -14,10 +13,7 @@ export class TwitterService {
     return 'TwitterService';
   }
 
-  constructor(
-    protected readonly configService: AppConfigService,
-    protected readonly datastoreService: DatastoreService,
-  ) {
+  constructor(protected readonly configService: AppConfigService) {
     this.twitter = new Twitter(this.configService.twitter);
   }
 
@@ -55,6 +51,7 @@ ${emojis[0]} Daily Change: ₿${(supply.last - supply.previous).toFixed(2)} (${
     }%)
 
 ↕️ Daily Min/Max: ₿${supply.min}/${supply.max}
+
 📈 Minted: ₿${data.flow.minted.value} in ${data.flow.minted.count} tnxs
 📉 Burned: ₿${data.flow.burned.value} in ${data.flow.burned.count} tnxs`;
   }

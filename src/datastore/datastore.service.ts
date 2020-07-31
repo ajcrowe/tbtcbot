@@ -6,7 +6,7 @@ import {
   WriteApi,
 } from '@influxdata/influxdb-client';
 import { AppConfigService } from '../config';
-import { SupplyData, SupplyQuery, TokenFlowData, SupplyInfluxData } from '../types';
+import { SupplyData, SupplyQuery, SupplyInfluxData } from '../types';
 import CoinGecko from 'coingecko-api';
 
 @Injectable()
@@ -65,8 +65,9 @@ export class DatastoreService {
   async getLastBlockHeight(): Promise<number> {
     const query = `from(bucket: "${this.bucket}")
     |> range(start: -1d)
+    |> filter(fn: (r) => r["_measurement"] == "supply")
     |> filter(fn: (r) => r["_field"] == "blockheight")
-    |> first()`;
+    |> last()`;
     try {
       return Number(
         (await this.querier.collectRows<Record<string, unknown>>(query))[0]
@@ -101,6 +102,7 @@ export class DatastoreService {
     const query = `from(bucket: "${this.bucket}")
     |> range(start: -1d)
     |> filter(fn: (r) => r["_measurement"] == "supply")
+    |> filter(fn: (r) => r["_field"] == "value")
     |> ${func}()`;
     try {
       return Number(
@@ -132,6 +134,6 @@ export class DatastoreService {
         })
       ).data.bitcoin.usd * supply;
 
-    return mcap < 9999999 ? mcap.toFixed(0) : `${(mcap / 1000000).toFixed(2)}m`;
+    return mcap < 999999 ? mcap.toFixed(0) : `${(mcap / 1000000).toFixed(2)}m`;
   }
 }
