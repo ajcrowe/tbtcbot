@@ -11,7 +11,11 @@ This bot is built with the [Nest](https://github.com/nestjs/nest) framework for 
   * Current supply
   * Daily increase
   * Daily max and min
-* Automated tweets on minting (todo when testnet is active)
+  * Minting/Burning value and transactions
+
+* Todo
+  * Velocity measures of circulation
+  * Liqudations/auctions
 
 ## Installation
 

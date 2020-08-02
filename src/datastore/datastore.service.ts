@@ -38,12 +38,12 @@ export class DatastoreService {
    * @param data The SupplyData to store
    */
   public storeSupply(data: SupplyData): void {
-    const point = [
+    const points = [
       new Point('supply')
         .floatField('value', data.supply)
-        .intField('blockheight', data.blockHeight)
-    ]
-    this.write(point)
+        .intField('block_height', data.blockHeight)
+    ];
+    this.write(points)
   }
 
   /**
@@ -54,6 +54,7 @@ export class DatastoreService {
   async write(points: Point[]): Promise<void> {
     try {
       points.forEach(point => {
+        console.log(point);
         this.writer.writePoint(point);
         this.writer.close();
       })
@@ -66,7 +67,7 @@ export class DatastoreService {
     const query = `from(bucket: "${this.bucket}")
     |> range(start: -1d)
     |> filter(fn: (r) => r["_measurement"] == "supply")
-    |> filter(fn: (r) => r["_field"] == "blockheight")
+    |> filter(fn: (r) => r["_field"] == "block_height")
     |> last()`;
     try {
       return Number(
