@@ -3,7 +3,7 @@ import { WebSocketProvider } from '@ethersproject/providers';
 import { ethers, Contract } from 'ethers';
 import { AppConfigService } from '../config';
 import { TokenFlowData, Issuance, SupplyData } from '../types';
-import * as TBTCContractJson from '../contracts/TBTCToken.json';
+import * as TBTCContractJson from '@keep-network/tbtc/artifacts/TBTCToken.json';
 
 @Injectable()
 export class EthereumService {
