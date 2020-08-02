@@ -55,10 +55,10 @@ export class DatastoreService {
     try {
       points.forEach(point => {
         this.writer.writePoint(point);
-        this.writer.close();
       })
+      await this.writer.flush();
     } catch (err) {
-      this._logger.error(`Failed write points: ${err}`);
+      this._logger.error(`Failed to write points: ${err}`);
     }
   }
 
