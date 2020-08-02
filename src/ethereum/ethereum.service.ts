@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { WebSocketProvider } from '@ethersproject/providers';
 import { ethers, Contract } from 'ethers';
 import { AppConfigService } from '../config';
-import { TokenFlowData, Issuance, SupplyData } from '../types';
+import { TokenFlowData, Issuance, TokenSupplyData } from '../types';
 import * as TBTCContractJson from '@keep-network/tbtc/artifacts/TBTCToken.json';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class EthereumService {
    * Get the current supply from the tBTC token contract
    */
 
-  public async getSupply(): Promise<SupplyData> {
+  public async getSupply(): Promise<TokenSupplyData> {
     try {
       return {
         blockHeight: (await this.provider.getBlockNumber()),

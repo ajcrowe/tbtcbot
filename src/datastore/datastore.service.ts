@@ -6,7 +6,7 @@ import {
   WriteApi,
 } from '@influxdata/influxdb-client';
 import { AppConfigService } from '../config';
-import { SupplyData, SupplyQuery, SupplyInfluxData } from '../types';
+import { InfluxQueryFunc, TokenSupplyData, TokenSupplyMetrics } from '../types';
 import CoinGecko from 'coingecko-api';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class DatastoreService {
    *
    * @param data The SupplyData to store
    */
-  public async storeSupply(data: SupplyData): Promise<void> {
+  public async storeSupply(data: TokenSupplyData): Promise<void> {
     const points = [
       new Point('supply')
         .floatField('value', data.supply)
@@ -67,7 +67,7 @@ export class DatastoreService {
     |> range(start: -1d)
     |> filter(fn: (r) => r["_measurement"] == "supply")
     |> filter(fn: (r) => r["_field"] == "block_height")
-    |> min()`;
+    |> ${InfluxQueryFunc.MIN}()`;
     try {
       return Number(
         (await this.querier.collectRows<Record<string, unknown>>(query))[0]
@@ -81,12 +81,12 @@ export class DatastoreService {
   /**
    * Get the current supply data from Influx
    */
-  public async getSupplyData(): Promise<SupplyInfluxData> {
-    const data: SupplyInfluxData = {};
-    data.last = await this.query(SupplyQuery.LAST);
-    data.previous = await this.query(SupplyQuery.FIRST);
-    data.min = await this.query(SupplyQuery.MIN);
-    data.max = await this.query(SupplyQuery.MAX);
+  public async getSupplyData(): Promise<TokenSupplyMetrics> {
+    const data: TokenSupplyMetrics = {};
+    data.last = await this.query(InfluxQueryFunc.LAST);
+    data.previous = await this.query(InfluxQueryFunc.FIRST);
+    data.min = await this.query(InfluxQueryFunc.MIN);
+    data.max = await this.query(InfluxQueryFunc.MAX);
 
     data.mcap = await this.getMcap(data.last);
     data.diff = ((data.last / data.previous - 1) * 100).toFixed(2);
@@ -98,7 +98,7 @@ export class DatastoreService {
    * Query Influx for various meansure of the supply
    * @param func the function to use
    */
-  async query(func: string): Promise<number> {
+  async query(func: InfluxQueryFunc): Promise<number> {
     const query = `from(bucket: "${this.bucket}")
     |> range(start: -1d)
     |> filter(fn: (r) => r["_measurement"] == "supply")

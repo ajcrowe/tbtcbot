@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { EthereumService } from './ethereum.service';
 import { DatastoreService } from '../datastore'; 
-import { SupplyData, TokenFlowData } from 'src/types';
+import { TokenSupplyData, TokenFlowData } from 'src/types';
 
 @Controller()
 export class EthereumController {
@@ -11,7 +11,7 @@ export class EthereumController {
   ) {}
 
   @Get('supply')
-  async getSupply(): Promise<SupplyData> {
+  async getSupply(): Promise<TokenSupplyData> {
     return await this.service.getSupply();
   }
 

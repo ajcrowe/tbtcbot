@@ -1,7 +1,7 @@
 /**
- * Token supply data type
+ * Token supply metrics influx data type
  */
-export interface SupplyInfluxData {
+export interface TokenSupplyMetrics {
   last?: number;
   previous?: number;
   diff?: string;
@@ -10,24 +10,37 @@ export interface SupplyInfluxData {
   mcap?: string;
 }
 
+/**
+ * Token Supply data
+ */
+export interface TokenSupplyData {
+  blockHeight: number;
+  supply: number;
+}
+
+/**
+ * Token Flow data (minting/burning)
+ */
 export interface TokenFlowData {
   burned: Issuance;
   minted: Issuance;
 }
 
+/**
+ * Issuance value and transaction count
+ */
 export interface Issuance {
   count: number;
   value: number;
 }
 
+
+/**
+ * Daily Tweet status data
+ */
 export interface DailyTweet {
   flow?: TokenFlowData;
-  supply?: SupplyInfluxData;
-}
-
-export interface SupplyData {
-  blockHeight: number;
-  supply: number;
+  supply?: TokenSupplyMetrics;
 }
 
 /**
@@ -41,7 +54,7 @@ export enum CronJobs {
 /**
  * Supply query functions
  */
-export enum SupplyQuery {
+export enum InfluxQueryFunc {
   LAST = 'last',
   FIRST = 'first',
   MIN = 'min',
